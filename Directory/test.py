@@ -1,5 +1,5 @@
 from appJar import *
-from Directory import Homescreen
+import Homescreen
 
 Homescreen.loadHome("boot")
 

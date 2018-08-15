@@ -3,7 +3,7 @@ valcoAdd="A"
 OMRONAdd="A"
 
 from appJar import *
-from Directory import functions
+import functions
 
 def loadHome(boot):
     app = gui("Flumi", "800x480")
@@ -21,7 +21,7 @@ def loadHome(boot):
     for y in range(1,15):
         app.addLabel("top%s"%(y),"",y,0)
         
-    app.addImage("logo","logo220.png",0,0,25,5)
+    app.addImage("logo","images/logo220.png",0,0,25,5)
     app.zoomImage("logo",2)
 
     app.addIconButton("milliGATButton",functions.press,"arrow-1-up",6,3,4,2)
