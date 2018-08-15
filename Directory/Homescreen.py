@@ -1,7 +1,7 @@
 
 
 from appJar import gui
-from Directory import functions
+import functions
 def loadHome(variables):
     app=variables.get(1)
     milliGATAdd=variables.get(2)
@@ -11,7 +11,7 @@ def loadHome(variables):
     
 
         
-    app.addImage("logo","Directory/images/logo220.png",0,0,25,5)
+    app.addImage("logo","Images/logo220.png",0,0,25,5)
     app.zoomImage("logo",2)
 
     app.addIconButton("milliGATButton",lambda: functions.switchPage(0, variables),"arrow-1-up",6,3,4,2)

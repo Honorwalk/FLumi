@@ -1,9 +1,9 @@
 from appJar import gui
-from Directory import Homescreen
-from Directory import milliGAT
-from Directory import valco
-from Directory import OMRON
-from Directory import functions
+import Homescreen
+import milliGAT
+import valco
+import OMRON
+import functions
 
 
 

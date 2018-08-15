@@ -1,5 +1,5 @@
 from appJar import gui
-from Directory import functions
+import functions
 def loadMilliGATHome(variables):
         app=variables.get(1)
         milliGATAdd=variables.get(2)

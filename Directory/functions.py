@@ -1,5 +1,5 @@
 from appJar import gui
-from Directory import milliGAT
+import milliGAT
 
 
 def press(btn):
