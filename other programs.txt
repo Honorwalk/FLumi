@@ -1,6 +1,0 @@
-Other things for Flumi (not vanilla Raspian) 
--> FTDI Driver
-
--> On screen keyboard
-	sudo apt-get install matchbox-keyboard
-	sudo dpkg -i matchbox*

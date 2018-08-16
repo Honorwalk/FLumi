@@ -1,0 +1,13 @@
+Useful Links
+
+How to create .desktop app
+http://www.vslcreations.com/2016/06/how-to-create-desktop-shortcut-for.html
+
+Used GUI kit Reference
+http://appjar.info/
+
+Using Git with Raspberry
+https://www.youtube.com/watch?v=FV7eiqN01hc
+
+switch case statements (Dictionaries)
+https://jaxenter.com/implement-switch-case-statement-python-138315.html

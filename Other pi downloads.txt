@@ -1,0 +1,10 @@
+Other Pi downloads
+
+pyftdi
+	FTDI driver for python
+http://eblot.github.io/pyftdi/installation.html
+	apt-get install libusb-1.0
+	pip3 install pyftdi
+
+
+

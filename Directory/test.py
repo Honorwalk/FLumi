@@ -4,17 +4,12 @@ import milliGAT
 import valco
 import OMRON
 import functions
+import variables
 
 
 
-variables={
-    1 : gui("Flumi", "800x480"),
-    2 : "A",
-    3 : "A",
-    4 : "A"
-    }
-app=variables.get(1)
-app.setBg("lightGrey")
+app=variables.variables.get(1)
+app.setBg("Grey")
 app.setSticky("news")
 app.setExpand("both")
 app.setFont(size=10)
@@ -24,18 +19,20 @@ app.showSplash("Fluidics Machine Interface", fill="darkGrey", stripe="white", fg
         
 with app.frameStack("Pages", start=0):
     with app.frame("home"):
-        Homescreen.loadHome(variables)
+        functions.layout()
+        Homescreen.loadHome()
     with app.frame("controlDeck"):
         with app.frameStack("Control"):
-            functions.layout(1,app)
-            functions.loadMenu(variables)
+            functions.layout()
+            functions.loadMenu()
             with app.frame("milliGAT"):
-                milliGAT.loadMilliGATHome(variables)
+                milliGAT.loadMilliGATHome()
             with app.frame("Valco"):
-                valco.loadValcoHome(variables)
+                valco.loadValcoHome()
             with app.frame("OMRON"):
-                OMRON.loadOMRONHome(variables)
+                OMRON.loadOMRONHome()
 app.go()
+
 
 
     
