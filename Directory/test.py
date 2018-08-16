@@ -14,9 +14,9 @@ app.setSticky("news")
 app.setExpand("both")
 app.setFont(size=10)
 app.setLabelFont(size=20)
-app.showSplash("Fluidics Machine Interface", fill="darkGrey", stripe="white", fg="black", font="50")
+app.setOnTop(stay=True)
 
-        
+#app.showSplash("Fluidics Machine Interface", fill="darkGrey", stripe="white", fg="black", font="50")
 with app.frameStack("Pages", start=0):
     with app.frame("home"):
         functions.layout()

@@ -7,7 +7,7 @@ valcoAdd=variables.variables.get(3)
 OMRONAdd=variables.variables.get(4)
 def loadMilliGATHome():
         
-        app.addLabel("blerb","milliGAT Pump Control",0,0,25,5)
+        app.addLabel("milliGATTitle","milliGAT Pump Control",0,0,25,5)
 
 
 

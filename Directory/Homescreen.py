@@ -13,6 +13,7 @@ def loadHome():
     app.zoomImage("logo",2)
     app.addIconButton("serialRefresh",lambda: functions.testConnection(),"connect-alt-1",1,22,2,2)
 
+
     app.addIconButton("milliGATButton",lambda: functions.switchPage(0),"arrow-1-up",6,3,4,2)
     app.addLabel("milliGATLabel","milliGAT Pump",6,8,6,1)
     app.addLabel("milliGATAddressText","Address: ",7,9,5,1)
