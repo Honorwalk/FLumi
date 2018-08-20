@@ -7,6 +7,8 @@ variables={
     4 : "A"
     }
 layouts=0
+menus=0
+spacers=0
 connectedmilliGAT=[]
 connectedValco=[]
 connectedOMRON=[]
