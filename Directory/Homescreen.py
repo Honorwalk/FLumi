@@ -11,10 +11,12 @@ def loadHome():
     app.addImage("logo","Directory/Images/logo600.gif",0,1,6,2)
     app.addIconButton("exitButton",lambda: app.stop(), "exit",0,0,1,1)
     app.setButtonBg("exitButton","red")
-    app.addIconButton("serialRefresh",lambda: functions.testConnection(),"connect-alt-1",0,7,1,1)
+    app.addIconButton("serialRefresh",functions.testConnection,"connect-alt-1",0,7,1,1)
     app.addImage("spinner","Directory/Images/loading.gif",1,7,1,1)
     app.setAnimationSpeed("spinner",60)
     app.hideImage("spinner")
+
+
 
     functions.spacer(1,0,1,1)
     functions.spacer(2,0,7,1)

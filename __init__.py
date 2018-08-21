@@ -16,7 +16,7 @@ app.setFont(size=10)
 app.setLabelFont(size=20)
 app.setOnTop(stay=True)
 
-#app.showSplash("Fluidics Machine Interface", fill="darkGrey", stripe="white", fg="black", font="50")
+app.showSplash("Fluidics Machine Interface", fill="darkGrey", stripe="white", fg="black", font="50")
 
 with app.frameStack("Pages", start=0):
     with app.frame("home",0,0,25,16):
@@ -29,10 +29,10 @@ with app.frameStack("Pages", start=0):
         OMRON.loadOMRONHome()
 app.setPadding([0,0])
 
-
-app.go()
 if app.exitFullscreen():
     app.stop()
+app.go()
+
 
 
 
