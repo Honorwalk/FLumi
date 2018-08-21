@@ -86,12 +86,13 @@ def testConnection():
 			app.changeOptionBox("milliGATAddress",["-select Address-",]+variables.connectedmilliGAT)
 			app.changeOptionBox("valcoAddress",["-select Address-",]+variables.connectedValco)
 			app.changeOptionBox("OMRONAddress",["-select Address-",]+variables.connectedOMRON) 
-			app.enableButton("serialRefresh")
+			
 
 		except serial.serialutil.SerialException:
 				app.errorBox("USB Not Connected","Device cannot open the serial port. Please make sure that the USB is securely plugged into a USB port and the device is powered on.", parent=None)
 		app.hideImage("spinner")
-	
+		app.enableButton("serialRefresh")
+
 	t=threading.Thread(target=callback)
 	t.daemon = True
 	t.start()

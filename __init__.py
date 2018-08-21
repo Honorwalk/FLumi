@@ -29,10 +29,10 @@ with app.frameStack("Pages", start=0):
         OMRON.loadOMRONHome()
 app.setPadding([0,0])
 
+
+app.go()
 if app.exitFullscreen():
     app.stop()
-app.go()
-
 
 
 
