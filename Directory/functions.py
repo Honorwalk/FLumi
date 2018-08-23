@@ -3,6 +3,9 @@ import time
 import serial
 from string import ascii_uppercase
 from . import variables
+from . import valco
+from . import OMRON
+from . import Homescreen
 import threading
 app=variables.variables.get(1)
 milliGATAdd=variables.variables.get(2)
@@ -16,24 +19,13 @@ def spacer(x,y,ylen,xlen):
 		app.addLabel("space"+str(variables.spacers),"",x,y,ylen,xlen)
 		variables.spacers+=1
 
-def layout():
-		for x in range(25):
-				app.addLabel(str(variables.layouts)+"side%s"%(x),"",0,x)
-		for y in range(1,16):
-				app.addLabel(str(variables.layouts)+"top%s"%(y),"",y,0)
-		variables.layouts+=1
 
-def loadMenu(title):
-		app.addIconButton(str(variables.menus)+"exitButton",lambda: app.stop(), "exit",0,0,1,1)
-		app.addLabel(str(variables.menus)+"menuTitle",title,0,1,6,1)
-		app.addIconButton(str(variables.menus)+"homeButton",lambda: app.selectFrame("Pages",0,callFunction=True),"arrow-1-left",0,7,1,1)
-
-		variables.menus+=1
-
-
-
+def homeScreen():
+	app.selectFrame("Pages", 0, callFunction=True)
+			
 def switchPage(btn):
-		app.selectFrame("Pages",btn,callFunction=True)
+
+	app.selectFrame("Pages", btn, callFunction=True)
 
 def testConnection():
 	app.disableButton("serialRefresh")
@@ -87,16 +79,15 @@ def testConnection():
 			app.changeOptionBox("valcoAddress",["-select Address-",]+variables.connectedValco)
 			app.changeOptionBox("OMRONAddress",["-select Address-",]+variables.connectedOMRON) 
 			
+			
 
 		except serial.serialutil.SerialException:
 				app.errorBox("USB Not Connected","Device cannot open the serial port. Please make sure that the USB is securely plugged into a USB port and the device is powered on.", parent=None)
 		app.hideImage("spinner")
 		app.enableButton("serialRefresh")
-
-	t=threading.Thread(target=callback)
-	t.daemon = True
+	t=threading.Thread(target=callback, name="serialCheck")
 	t.start()
-
+	
 def getFCS(command):
 	binReturn=["0","0","0","0","0","0","0","0"]
 	returner=0
@@ -112,10 +103,6 @@ def getFCS(command):
 	return returner.upper()+"*"
 
 
-
-
-
-					
 
 
         

@@ -4,31 +4,29 @@ from Directory import milliGAT
 from Directory import valco
 from Directory import OMRON
 from Directory import functions
-from Directory import variables
+from Directory import numPad
+from Directory.variables import variables
+from Directory import numPadInit
 
 
-
-app=variables.variables.get(1)
+app=variables.get(1)
 app.setBg("Grey")
 app.setSticky("news")
 app.setExpand("both")
 app.setFont(size=10)
 app.setLabelFont(size=20)
-app.setOnTop(stay=True)
+app.setPadding([10,10])
 
-app.showSplash("Fluidics Machine Interface", fill="darkGrey", stripe="white", fg="black", font="50")
-
+#app.showSplash("Fluidics Machine Interface", fill="darkGrey", stripe="white", fg="black", font="50")
 with app.frameStack("Pages", start=0):
-    with app.frame("home",0,0,25,16):
+    with app.frame():
         Homescreen.loadHome()
-    with app.frame("milliGAT",0,0,25,16):
-        milliGAT.loadMilliGATHome()
-    with app.frame("Valco",0,0,25,16):
+    with app.frame():
+        milliGAT.milliGATHome()
+    with app.frame():
         valco.loadValcoHome()
-    with app.frame("OMRON",0,0,25,16):
+    with app.frame():
         OMRON.loadOMRONHome()
-app.setPadding([0,0])
-
 
 app.go()
 if app.exitFullscreen():
