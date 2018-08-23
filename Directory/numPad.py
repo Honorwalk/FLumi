@@ -71,14 +71,14 @@ class newPad():
     def go(self):
     #volume
         if self.btn=="milliVolume":
-            self.obj.milliVar.volume=float(self.entry)
+            self.obj.milliVar.volume=int(self.entry)
             print(self.obj.milliVar.volume) 
     #flow Rate
         elif self.btn=="milliFlowRate":
-            self.obj.milliVar.flowRate=float(self.entry)
+            self.obj.milliVar.flowRate=int(self.entry)
             print(self.obj.milliVar.flowRate) 
         self.obj.milliVar.save()
-        app.setButton(self.btn,float(self.entry))
+        app.setButton(self.btn,int(self.entry))
         app.hideSubWindow("numPad")  
 
 

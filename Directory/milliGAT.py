@@ -3,6 +3,7 @@ from . import functions
 from . import Homescreen
 from . import variables
 from . import numPadInit
+import serial
 import time
 app=variables.variables.get(1)
 milliGATAdd=variables.variables.get(2)
@@ -30,9 +31,9 @@ class milliGATHome():
                         with app.tab("Home"):
                                 with app.frame("milliLeft",0,0):
                                         with app.frame("milliAspirate"):
-                                                app.addIconButton("leftAspirate",lambda: aspirate("left"),"arrow-1-left",0,0)
-                                                app.addIconButton("stopAspirate",lambda: aspirate("stop"),"stop-alt",0,1)
-                                                app.addIconButton("rightAspirate",lambda: aspirate("right"),"arrow-1-right",0,2)
+                                                app.addIconButton("leftAspirate",lambda: self.aspirate("left"),"arrow-1-left",0,0)
+                                                app.addIconButton("stopAspirate",lambda: self.aspirate("stop"),"stop-alt",0,1)
+                                                app.addIconButton("rightAspirate",lambda: self.aspirate("right"),"arrow-1-right",0,2)
                                                 app.setButtonFg("leftAspirate","green")
 
                                         with app.frame("milliImage"):
@@ -44,9 +45,9 @@ class milliGATHome():
                                                 app.hideImage("rightFlow")
 
                                         with app.frame("milliSlew"):
-                                                app.addIconButton("leftSlew",lambda: slew("left"),"arrow-1-backward",0,0)
-                                                app.addIconButton("stopSlew",lambda: slew("stop"),"stop-alt",0,1)
-                                                app.addIconButton("rightSlew",lambda: slew("right"),"arrow-1-forward",0,2)
+                                                app.addIconButton("leftSlew",lambda: self.slew("left"),"arrow-1-backward",0,0)
+                                                app.addIconButton("stopSlew",lambda: self.slew("stop"),"stop-alt",0,1)
+                                                app.addIconButton("rightSlew",lambda: self.slew("right"),"arrow-1-forward",0,2)
                                 with app.frame("milliRight",0,1):
                                         app.addLabel("milliAddressText","Pump Address: ",0,0)
                                         app.addOptionBox("milliAddress",["-select Address-",]+variables.connectedmilliGAT,0,1,2)
@@ -69,51 +70,96 @@ class milliGATHome():
                                 app.addIconButton("milExitButton",lambda: app.stop(), "exit",)
 
 
-def aspirate(direction):
-        items=["rightAspirate","leftAspirate","rightSlew","leftSlew","stopSlew"]
-        if direction=="left":
-                app.hideImage("stopFlow")
-                app.showImage("leftFlow")
-                for i in items:
-                        app.disableButton(i)
-        elif direction=="right":
-                app.hideImage("stopFlow")
-                app.showImage("rightFlow")
-                for i in items:
-                        app.disableButton(i)
-        elif direction=="stop":
-                app.hideImage("rightFlow")
-                app.hideImage("leftFlow")
-                app.showImage("stopFlow")
-                for i in items:
-                        app.enableButton(i)
+        def aspirate(self, direction):
+                connect=1
+                address=app.getOptionBox("milliAddress")
+                try:
+                        ser = serial.Serial(
+                                #port='COM5',
+                                port='/dev/ttyUSB0',
+                                baudrate=9600,
+                                parity=serial.PARITY_NONE,
+                                stopbits=serial.STOPBITS_ONE,
+                                bytesize=serial.EIGHTBITS,
+                                timeout=0.05
+                        )
+                except serial.serialutil.SerialException:
+                        app.errorBox("USB Not Connected","Device cannot open the serial port. Please make sure that the USB is securely plugged into a USB port and the device is powered on.", parent=None)
+                        connect=0
 
-def slew(direction):
-        items=["rightAspirate","leftAspirate","rightSlew","leftSlew","stopAspirate"]
-        if direction=="left":
-                app.hideImage("stopFlow")
-                app.showImage("leftFlow")
-                for i in items:
-                        app.disableButton(i)
-        elif direction=="right":
-                app.hideImage("stopFlow")
-                app.showImage("rightFlow")
-                for i in items:
-                        app.disableButton(i)
-        elif direction=="stop":
-                app.hideImage("rightFlow")
-                app.hideImage("leftFlow")
-                app.showImage("stopFlow")
-                for i in items:
-                        app.enableButton(i)
+                if connect==1 and str(address)!="None":
+                        items=["rightAspirate","leftAspirate","rightSlew","leftSlew","stopSlew"]
+                        if direction=="left":
+                                app.hideImage("stopFlow")
+                                app.showImage("leftFlow")
+                                for i in items:
+                                        app.disableButton(i)
+                                ser.write((str(address)+"VM "+str(self.milliVar.flowRate*809)+"\n").encode())
+                                ser.write((str(address)+"VL -"+str(self.milliVar.volume)+"\n").encode())
+                                ser.write((str(address)+"EX FL\n").encode())                             
+                        elif direction=="right":
+                                app.hideImage("stopFlow")
+                                app.showImage("rightFlow")
+                                ser.write((str(address)+"VM "+str(self.milliVar.flowRate*809)+"\n").encode())
+                                ser.write((str(address)+"VL "+str(self.milliVar.volume)+"\n").encode())
+                                ser.write((str(address)+"EX FL\n").encode())
+                                for i in items:
+                                        app.disableButton(i)
+                        elif direction=="stop":
+                                app.hideImage("rightFlow")
+                                app.hideImage("leftFlow")
+                                app.showImage("stopFlow")
+                                for i in items:
+                                        app.enableButton(i)
+                                ser.write((str(address)+"SL 0\n").encode())
+                        ser.close()
+                elif str(address)=="None":
+                        app.errorBox("Pump Not Selected","Please select pump address", parent=None)
 
-def getVolume():
-        print("getVolume")
-def getFlowRate():
-        print("getFlowRate")
 
+        def slew(self,direction):
+                connect=1
+                address=app.getOptionBox("milliAddress")
+                try:
+                        ser = serial.Serial(
+                                #port='COM5',
+                                port='/dev/ttyUSB0',
+                                baudrate=9600,
+                                parity=serial.PARITY_NONE,
+                                stopbits=serial.STOPBITS_ONE,
+                                bytesize=serial.EIGHTBITS,
+                                timeout=0.05
+                        )
+                except serial.serialutil.SerialException:
+                        app.errorBox("USB Not Connected","Device cannot open the serial port. Please make sure that the USB is securely plugged into a USB port and the device is powered on.", parent=None)
+                        connect=0	
 
-                
+                if connect==1 and str(address)!= "None":
+                        items=["rightAspirate","leftAspirate","rightSlew","leftSlew","stopAspirate"]
+                        if direction=="left":
+                                app.hideImage("stopFlow")
+                                app.showImage("leftFlow")
+                                for i in items:
+                                        app.disableButton(i)
+                                ser.write((str(address)+"SL -"+str(self.milliVar.flowRate*809)+"\n").encode())
+                        elif direction=="right":
+                                app.hideImage("stopFlow")
+                                app.showImage("rightFlow")
+                                for i in items:
+                                        app.disableButton(i)
+                                ser.write((str(address)+"SL "+str(self.milliVar.flowRate*809)+"\n").encode())
+                        elif direction=="stop":
+                                app.hideImage("rightFlow")
+                                app.hideImage("leftFlow")
+                                app.showImage("stopFlow")
+                                for i in items:
+                                        app.enableButton(i)
+                                ser.write((str(address)+"SL 0\n").encode())
+                        ser.close()
+                elif str(address)=="None":
+                        app.errorBox("Pump Not Selected","Please select pump address", parent=None)
+
+                        
 
 
 

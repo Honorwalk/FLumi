@@ -76,6 +76,7 @@ def testConnection():
 
 			ser.close()
 			app.changeOptionBox("milliGATAddress",["-select Address-",]+variables.connectedmilliGAT)
+			app.changeOptionBox("milliAddress",["-select Address-",]+variables.connectedmilliGAT)
 			app.changeOptionBox("valcoAddress",["-select Address-",]+variables.connectedValco)
 			app.changeOptionBox("OMRONAddress",["-select Address-",]+variables.connectedOMRON) 
 			
