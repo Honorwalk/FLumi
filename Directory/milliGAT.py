@@ -31,8 +31,8 @@ class milliGATHome():
                         with app.frame("milliRightButtions",0,4,1,1):
                                 app.addIconButton("milliHomeButton",lambda: functions.homeScreen(),"arrow-1-left",0,0) 
                                 app.addIconButton("milliSerialRefresh",self.serial.testConnection,"connect-alt-1",1,0)
-                                app.setButtonBg("milliHomeButton","lightGreen")
-                                app.setButtonBg("milliSerialRefresh","lightGreen")
+                                app.setButtonBg("milliHomeButton","lightGrey")
+                                app.setButtonBg("milliSerialRefresh","lightGrey")
 
                         functions.spacer(0,1,1,1)
                         functions.spacer(0,3,1,1)
@@ -76,18 +76,21 @@ class milliGATHome():
                                         app.setPadding([10,10])
                                         app.addLabel("milliAddressText","Pump Address: ",0,0)
                                         app.addOptionBox("milliAddress",["-select Address-",]+variables.connectedmilliGAT,0,1,2)
-                                        app.setOptionBoxBg("milliAddress","lightGreen")
+                                        app.setOptionBoxBg("milliAddress","lightGrey")
                                         app.addLabel("milliVolumeText1","Volume: ",1,0)
                                         app.addNamedButton(str(self.milliVar.volume),"milliVolume",lambda btn: numPadInit.pad.show(5,0,btn,self),1,1)
-                                        app.setButtonBg("milliVolume","lightGreen")
+                                        app.setButtonBg("milliVolume","lightGrey")
                                         app.getButtonWidget("milliVolume").config(font=20)
                                         app.addLabel("milliVolumeText2","µl",1,2)
+                                        app.setLabelSticky("milliVolumeText2","nws")
+
                
                                         app.addLabel("milliFlowRateText","FlowRate: ",2,0)
                                         app.addNamedButton(str(self.milliVar.flowRate),"milliFlowRate",lambda btn: numPadInit.pad.show(5,0,btn,self) ,2,1)
-                                        app.setButtonBg("milliFlowRate","lightGreen")
+                                        app.setButtonBg("milliFlowRate","lightGrey")
                                         app.getButtonWidget("milliFlowRate").config(font=20)
                                         app.addLabel("milliFlowRateText2","µl/sec",2,2)
+                                        app.setLabelSticky("milliFlowRateText2","nws")
                                         with app.frame("milliFillFrame",3,0,3):
                                                 app.addMeter("milliFill")
                                                 app.setMeterFill("milliFill","green")

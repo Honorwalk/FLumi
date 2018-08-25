@@ -13,6 +13,7 @@ def loadHome():
     app.addIconButton("exitButton",lambda: app.stop(), "exit",0,0,1,1)
     app.setButtonBg("exitButton","red")
     app.addIconButton("serialRefresh",serial.testConnection,"connect-alt-1",0,7,1,1)
+    app.setButtonBg("serialRefresh","lightGrey")
     app.addImage("homeSpinner","Directory/Images/loading.gif",1,7,1,1)
     app.setAnimationSpeed("homeSpinner",60)
     app.hideImage("homeSpinner")

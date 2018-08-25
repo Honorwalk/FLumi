@@ -10,12 +10,13 @@ from Directory import numPadInit
 
 
 app=variables.get(1)
-app.setBg("Grey")
+app.setBg("lightGrey")
 app.setSticky("news")
 app.setExpand("both")
 app.setFont(size=10)
 app.setLabelFont(size=20)
-app.setPadding([20,20])
+#app.setPadding([20,20])
+app.setPadding([20,0])
 
 #app.showSplash("Fluidics Machine Interface", fill="darkGrey", stripe="white", fg="black", font="50")
 with app.frameStack("Pages", start=0):
