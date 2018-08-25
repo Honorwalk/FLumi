@@ -1,4 +1,5 @@
 from appJar import gui
+import serial
 try: 
     import cPickle as pickle
 except ImportError:

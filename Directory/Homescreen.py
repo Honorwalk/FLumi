@@ -8,13 +8,14 @@ milliGATAdd=variables.variables.get(2)
 valcoAdd=variables.variables.get(3)
 OMRONAdd=variables.variables.get(4)
 def loadHome():
+    serial=functions.mySerial()
     app.addImage("logo","Directory/Images/logo600.gif",0,1,6,2)
     app.addIconButton("exitButton",lambda: app.stop(), "exit",0,0,1,1)
     app.setButtonBg("exitButton","red")
-    app.addIconButton("serialRefresh",functions.testConnection,"connect-alt-1",0,7,1,1)
-    app.addImage("spinner","Directory/Images/loading.gif",1,7,1,1)
-    app.setAnimationSpeed("spinner",60)
-    app.hideImage("spinner")
+    app.addIconButton("serialRefresh",serial.testConnection,"connect-alt-1",0,7,1,1)
+    app.addImage("homeSpinner","Directory/Images/loading.gif",1,7,1,1)
+    app.setAnimationSpeed("homeSpinner",60)
+    app.hideImage("homeSpinner")
 
 
 

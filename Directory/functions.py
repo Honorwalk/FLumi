@@ -27,68 +27,104 @@ def switchPage(btn):
 
 	app.selectFrame("Pages", btn, callFunction=True)
 
-def testConnection():
-	app.disableButton("serialRefresh")
-	app.showImage("spinner")
-
-	def callback():
-		variables.connectedmilliGAT=[]
-		variables.connectedValco=[]
-		variables.connectedOMRON=[]
+class mySerial():
+	ser=""
+	def error(self):
+		app.errorBox("USB Not Connected","Device cannot open the serial port. Please make sure that the USB is securely plugged into a USB port and the device is powered on.", parent=None)
+	def connect(self):
+		self.connected=1
 		try:
-			ser = serial.Serial(
-					#port='COM5',
-					port='/dev/ttyUSB0',
-					baudrate=9600,
-					parity=serial.PARITY_NONE,
-					stopbits=serial.STOPBITS_ONE,
-					bytesize=serial.EIGHTBITS,
-					timeout=0.05
-			)
-			for char in ascii_uppercase:				
-			#for milliGAT Pump
-					ser.write((char+"PR EU\n").encode())
-					ser.readline()
-					mi=ser.readline()
-					if mi!=b''and mi!=b'?\r\n':
-							variables.connectedmilliGAT.append(char)
-					ser.flushInput()
-					ser.flushOutput()
+			self.ser = serial.Serial(
+                    #port='COM5',
+                    port='/dev/ttyUSB0',
+                    baudrate=9600,
+                    parity=serial.PARITY_NONE,
+                    stopbits=serial.STOPBITS_ONE,
+                    bytesize=serial.EIGHTBITS,
+                    timeout=0.08
+            )
+		except serial.serialutil.SerialException:
+			self.connected=0
 
-			#for Valco Valve
-					ser.write((char+"VT\n").encode())
-					ser.readline()
-					va=ser.readline()
-					if va!=b''and va!=b'?\r\n':
-							variables.connectedValco.append(char)
-					ser.flushInput()
-					ser.flushOutput()
-			#for OMRON
-			for char in range(0,9):
+	def disconnect(self):
+		self.connected=0
+		self.ser.close()
+
+	def __init__(self):
+		self.connect()
+		self.disconnect()
+
+	def testConnection(self):
+		self.connect()
+		if self.connected==1:
+			def callback():
+				variables.connectedmilliGAT=[]
+				variables.connectedValco=[]
+				variables.connectedOMRON=[]
+				app.changeOptionBox("milliGATAddress",["-select Address-",]+variables.connectedmilliGAT)
+				app.changeOptionBox("milliAddress",["-select Address-",]+variables.connectedmilliGAT)
+				app.changeOptionBox("valcoAddress",["-select Address-",]+variables.connectedValco)
+				app.changeOptionBox("OMRONAddress",["-select Address-",]+variables.connectedOMRON)
+
+				app.disableButton("serialRefresh")
+				app.disableButton("milliSerialRefresh")
+				app.showImage("homeSpinner")
+				app.showImage("milliSpinner")
+
+				for char in ascii_uppercase:				
+				#for milliGAT Pump
+					self.ser.write((char+"PR EU\n").encode())
+					self.ser.readline()
+					mi=self.ser.readline()
+					if mi!=b''and mi!=b'?\r\n':
+						variables.connectedmilliGAT.append(char)
+					elif mi==b'?\r\n':
+						variables.connectedValco.append(char)
+					self.ser.flushInput()
+					self.ser.flushOutput()
+
+				#for OMRON
+				for char in range(0,9):
 					string="@0"+str(char)+"RS01"
 					string=string+getFCS(string)+"\r\n"
-					ser.write((string).encode())
-					om=ser.readline()
+					self.ser.write((string).encode())
+					om=self.ser.readline()
 					if om!=b'':
 							variables.connectedOMRON.append(char)
-					ser.flushInput()
-					ser.flushOutput()
+					self.ser.flushInput()
+					self.ser.flushOutput()
+				self.disconnect()
+				app.changeOptionBox("milliGATAddress",["-select Address-",]+variables.connectedmilliGAT)
+				app.changeOptionBox("milliAddress",["-select Address-",]+variables.connectedmilliGAT)
+				app.changeOptionBox("valcoAddress",["-select Address-",]+variables.connectedValco)
+				app.changeOptionBox("OMRONAddress",["-select Address-",]+variables.connectedOMRON)
 
-			ser.close()
-			app.changeOptionBox("milliGATAddress",["-select Address-",]+variables.connectedmilliGAT)
-			app.changeOptionBox("milliAddress",["-select Address-",]+variables.connectedmilliGAT)
-			app.changeOptionBox("valcoAddress",["-select Address-",]+variables.connectedValco)
-			app.changeOptionBox("OMRONAddress",["-select Address-",]+variables.connectedOMRON) 
-			
-			
+				app.hideImage("homeSpinner")
+				app.hideImage("milliSpinner")
+				app.enableButton("serialRefresh") 
+				app.enableButton("milliSerialRefresh")
+				
+			t=threading.Thread(target=callback, name="serialCheck")
+			t.start() 
 
-		except serial.serialutil.SerialException:
-				app.errorBox("USB Not Connected","Device cannot open the serial port. Please make sure that the USB is securely plugged into a USB port and the device is powered on.", parent=None)
-		app.hideImage("spinner")
-		app.enableButton("serialRefresh")
-	t=threading.Thread(target=callback, name="serialCheck")
-	t.start()
-	
+		else: self.error()
+		
+	def write(self,cmd):
+		self.connect()
+		if self.connected==1:
+			self.ser.write(cmd)
+			self.disconnect()
+		else: self.error()
+
+	def read(self):	
+		self.connect()
+		if self.connected==1:
+			var=self.ser.read()
+			self.disconnect()
+			return var
+		else: self.error()
+
+
 def getFCS(command):
 	binReturn=["0","0","0","0","0","0","0","0"]
 	returner=0
