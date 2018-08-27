@@ -23,12 +23,16 @@ connectedOMRON=[]
 class milliGAT():
     def __init__(self):
         loadedClass=self.load()
-        if hasattr(loadedClass,'volume')==0:
+        if hasattr(loadedClass,'address')==0:
             self.volume=0
             self.flowRate=0
+            self.eu=0
+            self.address=[]
         else:
             self.volume=loadedClass.volume
             self.flowRate=loadedClass.flowRate
+            self.eu=loadedClass.eu
+            self.address=loadedClass.address
         self.save()
     def save(self):
         pickleOut=open("variables/milliGAT.pickle","wb")

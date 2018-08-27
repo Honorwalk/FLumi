@@ -29,8 +29,17 @@ def switchPage(btn):
 
 class mySerial():
 	ser=""
+	paired=0
 	def error(self):
 		app.errorBox("USB Not Connected","Device cannot open the serial port. Please make sure that the USB is securely plugged into a USB port and the device is powered on.", parent=None)
+		app.showImage("milliGATConnectN")
+		app.showImage("valcoConnectN")
+		app.showImage("OMRONConnectN")
+
+		app.hideImage("milliGATConnectY")
+		app.hideImage("valcoConnectY")
+		app.hideImage("OMRONConnectY")
+
 	def connect(self):
 		self.connected=1
 		try:
@@ -47,24 +56,24 @@ class mySerial():
 			self.connected=0
 
 	def disconnect(self):
-		self.connected=0
-		self.ser.close()
+		if self.ser!="":
+			self.ser.close()
 
 	def __init__(self):
 		self.connect()
 		self.disconnect()
-
+		
 	def testConnection(self):
 		self.connect()
 		if self.connected==1:
 			def callback():
+				self.paired=1
 				variables.connectedmilliGAT=[]
 				variables.connectedValco=[]
 				variables.connectedOMRON=[]
-				app.changeOptionBox("milliGATAddress",["-select Address-",]+variables.connectedmilliGAT)
 				app.changeOptionBox("milliAddress",["-select Address-",]+variables.connectedmilliGAT)
-				app.changeOptionBox("valcoAddress",["-select Address-",]+variables.connectedValco)
-				app.changeOptionBox("OMRONAddress",["-select Address-",]+variables.connectedOMRON)
+				#app.changeOptionBox("valcoAddress",["-select Address-",]+variables.connectedValco)
+				#app.changeOptionBox("OMRONAddress",["-select Address-",]+variables.connectedOMRON)
 
 				app.disableButton("serialRefresh")
 				app.disableButton("milliSerialRefresh")
@@ -94,10 +103,29 @@ class mySerial():
 					self.ser.flushInput()
 					self.ser.flushOutput()
 				self.disconnect()
-				app.changeOptionBox("milliGATAddress",["-select Address-",]+variables.connectedmilliGAT)
+
 				app.changeOptionBox("milliAddress",["-select Address-",]+variables.connectedmilliGAT)
-				app.changeOptionBox("valcoAddress",["-select Address-",]+variables.connectedValco)
-				app.changeOptionBox("OMRONAddress",["-select Address-",]+variables.connectedOMRON)
+				#app.changeOptionBox("valcoAddress",["-select Address-",]+variables.connectedValco)
+				#app.changeOptionBox("OMRONAddress",["-select Address-",]+variables.connectedOMRON)
+				if len(variables.connectedmilliGAT)!=0:
+					app.showImage("milliGATConnectY")
+					app.hideImage("milliGATConnectN")
+				else: 
+					app.showImage("milliGATConnectN")
+					app.HideImage("milliGATConnectY")
+				if len(variables.connectedValco)!=0:
+					app.showImage("valcoConnectY")
+					app.hideImage("valcoConnectN")
+				else:
+					app.showImage("valcoConnectN")
+					app.hideImage("valcoConnectY")
+				if len(variables.connectedOMRON)!=0:
+					app.showImage("OMRONConnectY")
+					app.hideImage("OMRONConnectN")
+				else: 
+					app.showImage("OMRONConnectN")
+					app.hideImage("OMRONConnectY")
+
 
 				app.hideImage("homeSpinner")
 				app.hideImage("milliSpinner")
@@ -110,17 +138,14 @@ class mySerial():
 		else: self.error()
 		
 	def write(self,cmd):
-		self.connect()
+		cmd=cmd.encode()
 		if self.connected==1:
 			self.ser.write(cmd)
-			self.disconnect()
 		else: self.error()
 
 	def read(self):	
-		self.connect()
 		if self.connected==1:
-			var=self.ser.read()
-			self.disconnect()
+			var=self.ser.readline()
 			return var
 		else: self.error()
 

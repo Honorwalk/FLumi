@@ -15,7 +15,6 @@ app.setSticky("news")
 app.setExpand("both")
 app.setFont(size=10)
 app.setLabelFont(size=20)
-#app.setPadding([20,20])
 app.setPadding([20,0])
 
 #app.showSplash("Fluidics Machine Interface", fill="darkGrey", stripe="white", fg="black", font="50")

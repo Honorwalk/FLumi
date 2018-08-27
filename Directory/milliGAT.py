@@ -15,24 +15,30 @@ flowRate=0
 class milliGATHome():
         milliVar=variables.milliGAT()
         serial=""
+        eu=809
+
         def __init__(self):
                 self.serial=functions.mySerial()
                 with app.frame("controlPage"): 
                         with app.frame("milliLeftButtons",0,0,1,1):
+                                app.setPadding([5,5])
                                 app.addIconButton("milliExitButton",lambda: app.stop(), "exit",0,0)
                                 app.setButtonBg("milliExitButton","red")
-                                functions.spacer(0,1,1,1)
-                                app.addImage("milliSpinner","Directory/Images/loading.gif",1,0)
-                                app.setAnimationSpeed("milliSpinner",60)
-                                app.hideImage("milliSpinner")
+                                app.addIconButton("milliHomeButton",lambda: functions.homeScreen(),"arrow-1-left",0,1)
+                                app.setButtonBg("milliHomeButton","lightGrey") 
 
                         app.addLabel("milliMenuTitle","millIGAT Pump Control",0,2,1,1)
 
                         with app.frame("milliRightButtions",0,4,1,1):
-                                app.addIconButton("milliHomeButton",lambda: functions.homeScreen(),"arrow-1-left",0,0) 
-                                app.addIconButton("milliSerialRefresh",self.serial.testConnection,"connect-alt-1",1,0)
-                                app.setButtonBg("milliHomeButton","lightGrey")
+                                app.setPadding([5,5])
+                                app.addIconButton("milliSerialRefresh",self.serial.testConnection,"connect-alt-1",0,1)
+                                app.addOptionBox("milliAddress",["-select Address-",]+variables.connectedmilliGAT,0,0)
+                                app.addImage("milliSpinner","Directory/Images/loading.gif",0,1)
+                                app.setAnimationSpeed("milliSpinner",60)
+                                app.hideImage("milliSpinner")
                                 app.setButtonBg("milliSerialRefresh","lightGrey")
+                                app.setImageBg("milliSpinner","lightGrey")
+                                
 
                         functions.spacer(0,1,1,1)
                         functions.spacer(0,3,1,1)
@@ -40,6 +46,7 @@ class milliGATHome():
                 
                 with app.tabbedFrame("milliGUI"): 
                         with app.tab("Home"):
+                                app.setPadding([10,10])
                                 app.setBg("white")
                                 with app.frame("milliLeft",0,0):
                                         with app.frame("milliAspirate"):
@@ -74,9 +81,6 @@ class milliGATHome():
 
                                 with app.frame("milliRight",0,1):
                                         app.setPadding([10,10])
-                                        app.addLabel("milliAddressText","Pump Address: ",0,0)
-                                        app.addOptionBox("milliAddress",["-select Address-",]+variables.connectedmilliGAT,0,1,2)
-                                        app.setOptionBoxBg("milliAddress","lightGrey")
                                         app.addLabel("milliVolumeText1","Volume: ",1,0)
                                         app.addNamedButton(str(self.milliVar.volume),"milliVolume",lambda btn: numPadInit.pad.show(5,0,btn,self),1,1)
                                         app.setButtonBg("milliVolume","lightGrey")
@@ -96,31 +100,55 @@ class milliGATHome():
                                                 app.setMeterFill("milliFill","green")
 
                         with app.tab("Settings"):
+                                app.setPadding([10,10])
                                 app.setBg("white")
-                                app.addIconButton("milExitButton",lambda: app.stop(), "exit",)
-
-
-
+                                with app.frame("settingsTop",0,0,2):
+                                        app.addIconButton("milliGetSettings",lambda: self.getSettings(),"download")
+                                        app.setButtonSticky("milliGetSettings","nse")
+                                with app.frame("settingsLeft",1,0):
+                                        with app.frame("eu"):
+                                                app.addLabel("euLabel","EU: ",0,0)
+                                                app.addLabel("euText",str(self.milliVar.eu),0,1)
+                                        with app.frame("set2"):
+                                                app.addLabel("set2Label","s2: ",0,0)
+                                                app.addLabel("set2Text","??",0,1)
+                                        with app.frame("set3"):
+                                                app.addLabel("set3Label","s3: ",0,0)
+                                                app.addLabel("set3Text","??",0,1)
+                                with app.frame("settingsRight",1,1):
+                                        with app.frame("set4"):
+                                                app.addLabel("set4Label","s4: ",0,0)
+                                                app.addLabel("set4Text","??",0,1)
+                                        with app.frame("set5"):
+                                                app.addLabel("set5Label","s5: ",0,0)
+                                                app.addLabel("set5Text","??",0,1)
+                                        with app.frame("set6"):
+                                                app.addLabel("set6Label","s6: ",0,0)
+                                                app.addLabel("set6Text","??",0,1)
+                                        
+                                        
 
         def aspirate(self, direction):
                 address=app.getOptionBox("milliAddress")
                 if str(address)!="None":
                         app.setImageBg("milliGATImage","lightGreen")
                         items=["rightAspirate","leftAspirate","rightSlew","leftSlew","stopSlew"]
+                        self.serial.connect()
                         if direction=="left":
                                 app.hideImage("stopFlow")
                                 app.showImage("leftFlow")
                                 for i in items:
                                         app.disableButton(i)
-                                self.serial.write((str(address)+"VM "+str(self.milliVar.flowRate*809)+"\n").encode())
-                                self.serial.write((str(address)+"VL -"+str(self.milliVar.volume)+"\n").encode())
-                                self.serial.write((str(address)+"EX FL\n").encode())                             
+                                self.serial.connect()
+                                self.serial.write((str(address)+"VM "+str(self.milliVar.flowRate*self.eu)+"\n"))
+                                self.serial.write((str(address)+"VL -"+str(self.milliVar.volume)+"\n"))
+                                self.serial.write((str(address)+"EX FL\n"))                             
                         elif direction=="right":
                                 app.hideImage("stopFlow")
                                 app.showImage("rightFlow")
-                                self.serial.write((str(address)+"VM "+str(self.milliVar.flowRate*809)+"\n").encode())
-                                self.serial.write((str(address)+"VL "+str(self.milliVar.volume)+"\n").encode())
-                                self.serial.write((str(address)+"EX FL\n").encode())
+                                self.serial.write((str(address)+"VM "+str(self.milliVar.flowRate*self.eu)+"\n"))
+                                self.serial.write((str(address)+"VL "+str(self.milliVar.volume)+"\n"))
+                                self.serial.write((str(address)+"EX FL\n"))
                                 for i in items:
                                         app.disableButton(i)
                         elif direction=="stop":
@@ -131,7 +159,8 @@ class milliGATHome():
                                         app.enableButton(i)
                                 app.setImageBg("milliGATImage","white")
 
-                                self.serial.write((str(address)+"SL 0\n").encode())
+                                self.serial.write((str(address)+"SL 0\n"))
+                        self.serial.disconnect()
 
 
                         """startTime=time.time()
@@ -146,11 +175,9 @@ class milliGATHome():
 
 
         def slew(self,direction):
-                self.serial=functions.mySerial()
                 address=app.getOptionBox("milliAddress")
-
                 if str(address)!= "None":
-                        print(app.getImageBg("milliGATImage"))
+                        self.serial.connect()
                         app.setImageBg("milliGATImage","lightGreen")
                         items=["rightAspirate","leftAspirate","rightSlew","leftSlew","stopAspirate"]
                         if direction=="left":
@@ -158,13 +185,13 @@ class milliGATHome():
                                 app.showImage("leftFlow")
                                 for i in items:
                                         app.disableButton(i)
-                                self.serial.write((str(address)+"SL -"+str(self.milliVar.flowRate*809)+"\n").encode())
+                                self.serial.write((str(address)+"SL -"+str(self.milliVar.flowRate*809)+"\n"))
                         elif direction=="right":
                                 app.hideImage("stopFlow")
                                 app.showImage("rightFlow")
                                 for i in items:
                                         app.disableButton(i)
-                                self.serial.write((str(address)+"SL "+str(self.milliVar.flowRate*809)+"\n").encode())
+                                self.serial.write((str(address)+"SL "+str(self.milliVar.flowRate*809)+"\n"))
                         elif direction=="stop":
                                 app.hideImage("rightFlow")
                                 app.hideImage("leftFlow")
@@ -173,10 +200,25 @@ class milliGATHome():
                                         app.enableButton(i)
                                 app.setImageBg("milliGATImage","white")
 
-                                self.serial.write((str(address)+"SL 0\n").encode())
+                                self.serial.write((str(address)+"SL 0\n"))
+                        self.serial.disconnect()
 
                 else:
-                        app.errorBox("Pump Not Selected","Please select pump address", parent=None)
+                        app.errorBox("Pump Not Selected","Please select pump address or connect devices", parent=None)
+
+        def getSettings(self):
+                address=app.getOptionBox("milliAddress")
+                if str(address)!= "None":
+                        self.serial.connect()
+                        self.serial.write(str(address)+"PR EU\n")
+                        self.serial.read()
+                        self.milliVar.eu=int(self.serial.read())
+                        self.serial.disconnect()
+                        app.setLabel("euText",str(self.milliVar.eu))
+                        self.milliVar.save()
+
+                else:
+                        app.errorBox("Pump Not Selected","Please select pump address or connect devices", parent=None)
 
                         
 
