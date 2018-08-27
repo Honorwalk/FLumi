@@ -15,7 +15,7 @@ def loadHome():
         app.addImage("logo","Directory/Images/logo600.gif",0,1,6,2)
         app.addIconButton("exitButton",lambda: app.stop(), "exit",0,0,1,1)
         app.setButtonBg("exitButton","red")
-        app.addIconButton("serialRefresh",lambda: serial.testConnection(address),"connect-alt-1",0,7,1,1)
+        app.addIconButton("serialRefresh",lambda: serial.testConnection(address,0),"connect-alt-1",0,7,1,1)
         app.setButtonBg("serialRefresh","lightGrey")
         app.addImage("homeSpinner","Directory/Images/loading.gif",0,7,1,1)
         functions.spacer(1,7,1,1)

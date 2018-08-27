@@ -32,7 +32,7 @@ class milliGATHome():
 
                         with app.frame("milliRightButtions",0,4,1,1):
                                 app.setPadding([5,5])
-                                app.addIconButton("milliSerialRefresh",lambda: self.serial.testConnection(self.address),"connect-alt-1",0,1)
+                                app.addIconButton("milliSerialRefresh",lambda: self.serial.testConnection(self.address,1),"connect-alt-1",0,1)
                                 app.addOptionBox("milliAddress",["-select Address-",]+self.address.milliGAT,0,0)
                                 app.addImage("milliSpinner","Directory/Images/loading.gif",0,1)
                                 app.setAnimationSpeed("milliSpinner",60)

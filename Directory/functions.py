@@ -63,7 +63,7 @@ class mySerial():
 		self.connect()
 		self.disconnect()
 		
-	def testConnection(self,address):
+	def testConnection(self,address, typ):
 		address.load()
 		self.connect()
 		if self.connected==1:
@@ -75,25 +75,35 @@ class mySerial():
 				app.showImage("homeSpinner")
 				app.showImage("milliSpinner")
 				prev=self.testInitAddr(address)
-				if prev[0]==0 or prev[1]==0:
+				
+				#for milliGAT Pump 
+				if prev[0]==0  and (typ==0 or typ==1):
 					address.milliGAT=[]
-					address.valco=[]
 					for char in ascii_uppercase:	
-						#for milliGAT Pump & valo Valve
 						self.write((char+"PR EU\n"))
 						self.read()
 						mi=self.read()
 						if mi!=b''and mi!=b'?\r\n':
 							address.milliGAT.append(char)
-						elif mi==b'?\r\n':
-							address.valco.append(char)
 						self.ser.flushInput()
 						self.ser.flushOutput()
 
-				if prev[2]==0:
+				#for valco Valve
+				if prev[1]==0 and (typ==0 or typ==2):
+					address.valco=[]
+					for char in ascii_uppercase:	
+						self.write((char+"PR OP\n"))
+						self.read()
+						mi=self.read()
+						if mi!=b''and mi!=b'?\r\n':
+							address.valco.append(char)
+						self.ser.flushInput()
+						self.ser.flushOutput()
+						
+				#for OMRON
+				if prev[2]==0 and (typ==0 or typ==3):
 					address.OMRON=[]
 					for char in range(0,9):
-						#for OMRON
 						string="@0"+str(char)+"RS01"
 						string=string+getFCS(string)+"\r\n"
 						self.write((string))
