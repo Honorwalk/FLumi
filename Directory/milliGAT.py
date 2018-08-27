@@ -19,6 +19,7 @@ class milliGATHome():
 
         def __init__(self):
                 self.serial=functions.mySerial()
+                self.address=variables.address(serial)
                 with app.frame("controlPage"): 
                         with app.frame("milliLeftButtons",0,0,1,1):
                                 app.setPadding([5,5])
@@ -31,8 +32,8 @@ class milliGATHome():
 
                         with app.frame("milliRightButtions",0,4,1,1):
                                 app.setPadding([5,5])
-                                app.addIconButton("milliSerialRefresh",self.serial.testConnection,"connect-alt-1",0,1)
-                                app.addOptionBox("milliAddress",["-select Address-",]+variables.connectedmilliGAT,0,0)
+                                app.addIconButton("milliSerialRefresh",lambda: self.serial.testConnection(self.address),"connect-alt-1",0,1)
+                                app.addOptionBox("milliAddress",["-select Address-",]+self.address.milliGAT,0,0)
                                 app.addImage("milliSpinner","Directory/Images/loading.gif",0,1)
                                 app.setAnimationSpeed("milliSpinner",60)
                                 app.hideImage("milliSpinner")

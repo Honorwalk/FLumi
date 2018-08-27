@@ -27,7 +27,7 @@ with app.frameStack("Pages", start=0):
         valco.loadValcoHome()
     with app.frame():
         OMRON.loadOMRONHome()
-
+functions.spacer(1,0,1,1)
 app.go()
 if app.exitFullscreen():
     app.stop()

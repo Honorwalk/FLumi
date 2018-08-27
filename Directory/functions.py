@@ -44,8 +44,8 @@ class mySerial():
 		self.connected=1
 		try:
 			self.ser = serial.Serial(
-                    #port='COM5',
-                    port='/dev/ttyUSB0',
+                    port='COM5',
+                    #port='/dev/ttyUSB0',
                     baudrate=9600,
                     parity=serial.PARITY_NONE,
                     stopbits=serial.STOPBITS_ONE,
@@ -63,63 +63,63 @@ class mySerial():
 		self.connect()
 		self.disconnect()
 		
-	def testConnection(self):
+	def testConnection(self,address):
+		address.load()
 		self.connect()
 		if self.connected==1:
 			def callback():
 				self.paired=1
-				variables.connectedmilliGAT=[]
-				variables.connectedValco=[]
-				variables.connectedOMRON=[]
-				app.changeOptionBox("milliAddress",["-select Address-",]+variables.connectedmilliGAT)
-				#app.changeOptionBox("valcoAddress",["-select Address-",]+variables.connectedValco)
-				#app.changeOptionBox("OMRONAddress",["-select Address-",]+variables.connectedOMRON)
-
+			
 				app.disableButton("serialRefresh")
 				app.disableButton("milliSerialRefresh")
 				app.showImage("homeSpinner")
 				app.showImage("milliSpinner")
+				prev=self.testInitAddr(address)
+				if prev[0]==0 or prev[1]==0:
+					address.milliGAT=[]
+					address.valco=[]
+					for char in ascii_uppercase:	
+						#for milliGAT Pump & valo Valve
+						self.write((char+"PR EU\n"))
+						self.read()
+						mi=self.read()
+						if mi!=b''and mi!=b'?\r\n':
+							address.milliGAT.append(char)
+						elif mi==b'?\r\n':
+							address.valco.append(char)
+						self.ser.flushInput()
+						self.ser.flushOutput()
 
-				for char in ascii_uppercase:				
-				#for milliGAT Pump
-					self.ser.write((char+"PR EU\n").encode())
-					self.ser.readline()
-					mi=self.ser.readline()
-					if mi!=b''and mi!=b'?\r\n':
-						variables.connectedmilliGAT.append(char)
-					elif mi==b'?\r\n':
-						variables.connectedValco.append(char)
-					self.ser.flushInput()
-					self.ser.flushOutput()
-
-				#for OMRON
-				for char in range(0,9):
-					string="@0"+str(char)+"RS01"
-					string=string+getFCS(string)+"\r\n"
-					self.ser.write((string).encode())
-					om=self.ser.readline()
-					if om!=b'':
-							variables.connectedOMRON.append(char)
-					self.ser.flushInput()
-					self.ser.flushOutput()
+				if prev[2]==0:
+					address.OMRON=[]
+					for char in range(0,9):
+						#for OMRON
+						string="@0"+str(char)+"RS01"
+						string=string+getFCS(string)+"\r\n"
+						self.write((string))
+						om=self.read()
+						if om!=b'':
+								address.OMRON.append(char)
+						self.ser.flushInput()
+						self.ser.flushOutput()
 				self.disconnect()
-
-				app.changeOptionBox("milliAddress",["-select Address-",]+variables.connectedmilliGAT)
-				#app.changeOptionBox("valcoAddress",["-select Address-",]+variables.connectedValco)
-				#app.changeOptionBox("OMRONAddress",["-select Address-",]+variables.connectedOMRON)
-				if len(variables.connectedmilliGAT)!=0:
+				
+				app.changeOptionBox("milliAddress",["-select Address-",]+address.milliGAT)
+				#app.changeOptionBox("valcoAddress",["-select Address-",]+address.valco)
+				#app.changeOptionBox("OMRONAddress",["-select Address-",]+address.OMRON)
+				if len(address.milliGAT)!=0:
 					app.showImage("milliGATConnectY")
 					app.hideImage("milliGATConnectN")
 				else: 
 					app.showImage("milliGATConnectN")
-					app.HideImage("milliGATConnectY")
-				if len(variables.connectedValco)!=0:
+					app.hideImage("milliGATConnectY")
+				if len(address.valco)!=0:
 					app.showImage("valcoConnectY")
 					app.hideImage("valcoConnectN")
 				else:
 					app.showImage("valcoConnectN")
 					app.hideImage("valcoConnectY")
-				if len(variables.connectedOMRON)!=0:
+				if len(address.OMRON)!=0:
 					app.showImage("OMRONConnectY")
 					app.hideImage("OMRONConnectN")
 				else: 
@@ -131,12 +131,49 @@ class mySerial():
 				app.hideImage("milliSpinner")
 				app.enableButton("serialRefresh") 
 				app.enableButton("milliSerialRefresh")
+				address.save()
 				
+
 			t=threading.Thread(target=callback, name="serialCheck")
 			t.start() 
 
 		else: self.error()
-		
+	
+	def testInitAddr(self,address):
+		test=[1,1,1]
+		for addr in address.milliGAT:
+			self.write((addr+"PR EU\n"))
+			self.read()
+			mi=self.read()
+			if mi==b''or mi==b'?\r\n':
+				test[0]=0
+			self.ser.flushInput()
+			self.ser.flushOutput()
+
+		for addr in address.valco:
+			self.write((addr+"PR OP\n"))
+			self.read()
+			va=self.read()
+			if va==b''or va==b'?\r\n':
+				test[1]=0
+			self.ser.flushInput()
+			self.ser.flushOutput()
+
+		for addr in address.OMRON:
+			string="@0"+str(addr)+"RS01"
+			string=string+getFCS(string)+"\r\n"
+			self.ser.write((string).encode())
+			om=self.ser.readline()
+			if om==b'':
+				test[2]=0
+			self.ser.flushInput()
+			self.ser.flushOutput()
+
+		if address.milliGAT==[]:test[0]=0
+		if address.valco==[]:test[1]=0
+		if address.OMRON==[]:test[2]=0
+		return test
+
 	def write(self,cmd):
 		cmd=cmd.encode()
 		if self.connected==1:

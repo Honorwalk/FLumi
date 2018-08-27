@@ -9,12 +9,13 @@ valcoAdd=variables.variables.get(3)
 OMRONAdd=variables.variables.get(4)
 def loadHome():
     serial=functions.mySerial()
+    address=variables.address(serial)
     with app.frame("homeTitleBar"):
         app.setPadding([5,5])
         app.addImage("logo","Directory/Images/logo600.gif",0,1,6,2)
         app.addIconButton("exitButton",lambda: app.stop(), "exit",0,0,1,1)
         app.setButtonBg("exitButton","red")
-        app.addIconButton("serialRefresh",serial.testConnection,"connect-alt-1",0,7,1,1)
+        app.addIconButton("serialRefresh",lambda: serial.testConnection(address),"connect-alt-1",0,7,1,1)
         app.setButtonBg("serialRefresh","lightGrey")
         app.addImage("homeSpinner","Directory/Images/loading.gif",0,7,1,1)
         functions.spacer(1,7,1,1)
@@ -24,8 +25,6 @@ def loadHome():
 
 
 
-    functions.spacer(1,0,1,1)
-    functions.spacer(2,0,7,1)
     with app.frame("homeMain"):
         app.setPadding([10,10])
         
