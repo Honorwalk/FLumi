@@ -105,9 +105,6 @@ class milliGATHome():
                         with app.tab("Settings"):
                                 app.setPadding([10,10])
                                 app.setBg("white")
-                                with app.frame("settingsTop",0,0,2):
-                                        app.addIconButton("milliGetSettings",lambda: self.getSettings(),"download")
-                                        app.setButtonSticky("milliGetSettings","nse")
                                 with app.frame("settingsLeft",1,0):
                                         with app.frame("eu"):
                                                 app.addLabel("euLabel","EU: ",0,0)
