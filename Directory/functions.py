@@ -87,13 +87,14 @@ class mySerial():
 							self.ser.flushInput()
 							self.ser.flushOutput()
 
-						for addr in obj.address.milliGAT:
-							self.write(str(addr)+"PR EU\n")
-							self.read()
-							eu=int(self.read())
-							bl=0
-							obj.address.milliGATSettings.append(tuple((eu,bl)))
-							obj.address.save()
+					for addr in obj.address.milliGAT:
+						self.write(str(addr)+"PR EU\n")
+						self.read()
+						eu=int(self.read())
+						print(eu)
+						bl=0
+						obj.address.milliGATSettings.append(tuple((eu,bl)))
+						obj.address.save()
 
 					if len(obj.address.milliGAT)!=0:
 						app.showImage("milliGATConnectY")
