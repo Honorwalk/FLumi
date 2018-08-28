@@ -130,47 +130,52 @@ class milliGATHome():
                                         
 
         def aspirate(self, direction):
+                self.percent=0
                 address=app.getOptionBox("milliAddress")
                 if str(address)!="None":
-                        app.setImageBg("milliGATImage","lightGreen")
-                        items=["rightAspirate","leftAspirate","rightSlew","leftSlew","stopSlew"]
                         self.serial.connect()
-                        if direction=="left":
-                                app.hideImage("stopFlow")
-                                app.showImage("leftFlow")
-                                for i in items:
-                                        app.disableButton(i)
-                                self.serial.connect()
-                                self.serial.write((str(address)+"VM "+str(self.milliVar.flowRate*self.eu)+"\n"))
-                                self.serial.write((str(address)+"VL -"+str(self.milliVar.volume)+"\n"))
-                                self.serial.write((str(address)+"EX FL\n"))                             
-                        elif direction=="right":
-                                app.hideImage("stopFlow")
-                                app.showImage("rightFlow")
-                                self.serial.write((str(address)+"VM "+str(self.milliVar.flowRate*self.eu)+"\n"))
-                                self.serial.write((str(address)+"VL "+str(self.milliVar.volume)+"\n"))
-                                self.serial.write((str(address)+"EX FL\n"))
-                                for i in items:
-                                        app.disableButton(i)
-                        elif direction=="stop":
-                                app.hideImage("rightFlow")
-                                app.hideImage("leftFlow")
-                                app.showImage("stopFlow")
-                                for i in items:
-                                        app.enableButton(i)
-                                app.setImageBg("milliGATImage","white")
+                        if self.serial.connected==1:
+                                app.setImageBg("milliGATImage","lightGreen")
+                                items=["rightAspirate","leftAspirate","rightSlew","leftSlew","stopSlew"]
+                                if direction=="left":
+                                        app.hideImage("stopFlow")
+                                        app.showImage("leftFlow")
+                                        for i in items:
+                                                app.disableButton(i)
+                                        self.serial.write((str(address)+"VM "+str(self.milliVar.flowRate*self.eu)+"\n"))
+                                        self.serial.write((str(address)+"VL -"+str(self.milliVar.volume)+"\n"))
+                                        self.serial.write((str(address)+"EX FL\n"))    
+                                        self.startTime=time.time()
+                                        self.percent=0
+                                        app.registerEvent(self.updateMeter) 
+                                        app.setPollTime(10)                
+                        
+                                elif direction=="right":
+                                        app.hideImage("stopFlow")
+                                        app.showImage("rightFlow")
+                                        for i in items:
+                                                app.disableButton(i)
+                                        self.serial.write((str(address)+"VM "+str(self.milliVar.flowRate*self.eu)+"\n"))
+                                        self.serial.write((str(address)+"VL "+str(self.milliVar.volume)+"\n"))
+                                        self.serial.write((str(address)+"EX FL\n"))
+                                        self.startTime=time.time() 
+                                        self.percent=0 
+                                        app.registerEvent(self.updateMeter)  
+                                        app.setPollTime(10)                
+                                        
+                                elif direction=="stop":
+                                        app.hideImage("rightFlow")
+                                        app.hideImage("leftFlow")
+                                        app.showImage("stopFlow")
+                                        for i in items:
+                                                app.enableButton(i)
+                                        app.setImageBg("milliGATImage","white")
 
-                                self.serial.write((str(address)+"SL 0\n"))
-                        self.serial.disconnect()
-
-
-                        """startTime=time.time()
-                        runTime=self.milliVar.volume/self.milliVar.flowRate
-                        def updateMilliMeter():
-                                getTime=time.time()
-                                app.setMeter("progress", ((getTime-startTime)/runTime)*100)
-                        app.registerEvent(updateMilliMeter)"""
-
+                                        self.serial.write((str(address)+"SL 0\n"))
+                                        self.percent=0
+                                        app.setMeter("milliFill",self.percent)
+                                        self.percent=200
+                                self.serial.disconnect()
                 else:
                         app.errorBox("Pump Not Selected","Please select pump address", parent=None)
 
@@ -179,34 +184,42 @@ class milliGATHome():
                 address=app.getOptionBox("milliAddress")
                 if str(address)!= "None":
                         self.serial.connect()
-                        app.setImageBg("milliGATImage","lightGreen")
-                        items=["rightAspirate","leftAspirate","rightSlew","leftSlew","stopAspirate"]
-                        if direction=="left":
-                                app.hideImage("stopFlow")
-                                app.showImage("leftFlow")
-                                for i in items:
-                                        app.disableButton(i)
-                                self.serial.write((str(address)+"SL -"+str(self.milliVar.flowRate*809)+"\n"))
-                        elif direction=="right":
-                                app.hideImage("stopFlow")
-                                app.showImage("rightFlow")
-                                for i in items:
-                                        app.disableButton(i)
-                                self.serial.write((str(address)+"SL "+str(self.milliVar.flowRate*809)+"\n"))
-                        elif direction=="stop":
-                                app.hideImage("rightFlow")
-                                app.hideImage("leftFlow")
-                                app.showImage("stopFlow")
-                                for i in items:
-                                        app.enableButton(i)
-                                app.setImageBg("milliGATImage","white")
-
-                                self.serial.write((str(address)+"SL 0\n"))
-                        self.serial.disconnect()
+                        if self.serial.connected==1:
+                                app.setImageBg("milliGATImage","lightGreen")
+                                items=["rightAspirate","leftAspirate","rightSlew","leftSlew","stopAspirate"]
+                                if direction=="left":
+                                        app.hideImage("stopFlow")
+                                        app.showImage("leftFlow")
+                                        for i in items:
+                                                app.disableButton(i)
+                                        self.serial.write((str(address)+"SL -"+str(self.milliVar.flowRate*809)+"\n"))
+                                elif direction=="right":
+                                        app.hideImage("stopFlow")
+                                        app.showImage("rightFlow")
+                                        for i in items:
+                                                app.disableButton(i)
+                                        self.serial.write((str(address)+"SL "+str(self.milliVar.flowRate*809)+"\n"))
+                                elif direction=="stop":
+                                        app.hideImage("rightFlow")
+                                        app.hideImage("leftFlow")
+                                        app.showImage("stopFlow")
+                                        for i in items:
+                                                app.enableButton(i)
+                                        app.setImageBg("milliGATImage","white")
+                                        self.serial.write((str(address)+"SL 0\n"))
+                                self.serial.disconnect()
 
                 else:
                         app.errorBox("Pump Not Selected","Please select pump address or connect devices", parent=None)
 
+        def updateMeter(self):
+                if self.percent<100: 
+                        sinceStart=time.time()-self.startTime
+                        self.percent=(sinceStart/(self.milliVar.volume/self.milliVar.flowRate))*100
+                        app.setMeter("milliFill",self.percent)
+                elif 100<self.percent<105: 
+                        self.aspirate("stop")
+   
         def getSettings(self):
                 address=app.getOptionBox("milliAddress")
                 if str(address)!= "None":

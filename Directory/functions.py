@@ -12,8 +12,6 @@ milliGATAdd=variables.variables.get(2)
 valcoAdd=variables.variables.get(3)
 OMRONAdd=variables.variables.get(4)
 
-def press(btn):
-		print(btn)
 
 def spacer(x,y,ylen,xlen):
 		app.addLabel("space"+str(variables.spacers),"",x,y,ylen,xlen)
@@ -63,7 +61,7 @@ class mySerial():
 		self.connect()
 		self.disconnect()
 		
-	def testConnection(self,address, typ):
+	def testConnection(self,address,typ):
 		address.load()
 		self.connect()
 		if self.connected==1:
@@ -77,64 +75,70 @@ class mySerial():
 				prev=self.testInitAddr(address)
 				
 				#for milliGAT Pump 
-				if prev[0]==0  and (typ==0 or typ==1):
-					address.milliGAT=[]
-					for char in ascii_uppercase:	
-						self.write((char+"PR EU\n"))
-						self.read()
-						mi=self.read()
-						if mi!=b''and mi!=b'?\r\n':
-							address.milliGAT.append(char)
-						self.ser.flushInput()
-						self.ser.flushOutput()
+				if typ==0 or typ==1:
+					if prev[0]==0 :
+						address.milliGAT=[]
+						for char in ascii_uppercase:	
+							self.write((char+"PR EU\n"))
+							self.read()
+							mi=self.read()
+							if mi!=b''and mi!=b'?\r\n':
+								address.milliGAT.append(char)
+							self.ser.flushInput()
+							self.ser.flushOutput()
+					if len(address.milliGAT)!=0:
+						app.showImage("milliGATConnectY")
+						app.hideImage("milliGATConnectN")
+					else: 
+						app.showImage("milliGATConnectN")
+						app.hideImage("milliGATConnectY")
 
 				#for valco Valve
-				if prev[1]==0 and (typ==0 or typ==2):
-					address.valco=[]
-					for char in ascii_uppercase:	
-						self.write((char+"PR OP\n"))
-						self.read()
-						mi=self.read()
-						if mi!=b''and mi!=b'?\r\n':
-							address.valco.append(char)
-						self.ser.flushInput()
-						self.ser.flushOutput()
+				if typ==0 or typ==2:
+					if prev[1]==0 :
+						address.valco=[]
+						for char in ascii_uppercase:	
+							self.write((char+"PR OP\n"))
+							self.read()
+							mi=self.read()
+							if mi!=b''and mi!=b'?\r\n':
+								address.valco.append(char)
+							self.ser.flushInput()
+							self.ser.flushOutput()
+					if len(address.valco)!=0:
+						app.showImage("valcoConnectY")
+						app.hideImage("valcoConnectN")
+					else:
+						app.showImage("valcoConnectN")
+						app.hideImage("valcoConnectY")
 						
 				#for OMRON
-				if prev[2]==0 and (typ==0 or typ==3):
-					address.OMRON=[]
-					for char in range(0,9):
-						string="@0"+str(char)+"RS01"
-						string=string+getFCS(string)+"\r\n"
-						self.write((string))
-						om=self.read()
-						if om!=b'':
-								address.OMRON.append(char)
-						self.ser.flushInput()
-						self.ser.flushOutput()
+				if typ==0 or typ==3:
+					if prev[2]==0:
+						address.OMRON=[]
+						for char in range(0,9):
+							string="@0"+str(char)+"RS01"
+							string=string+getFCS(string)+"\r\n"
+							self.write((string))
+							om=self.read()
+							if om!=b'':
+									address.OMRON.append(char)
+							self.ser.flushInput()
+							self.ser.flushOutput()
+					if len(address.OMRON)!=0:
+						app.showImage("OMRONConnectY")
+						app.hideImage("OMRONConnectN")
+					else: 
+						app.showImage("OMRONConnectN")
+						app.hideImage("OMRONConnectY")
 				self.disconnect()
 				
 				app.changeOptionBox("milliAddress",["-select Address-",]+address.milliGAT)
 				#app.changeOptionBox("valcoAddress",["-select Address-",]+address.valco)
 				#app.changeOptionBox("OMRONAddress",["-select Address-",]+address.OMRON)
-				if len(address.milliGAT)!=0:
-					app.showImage("milliGATConnectY")
-					app.hideImage("milliGATConnectN")
-				else: 
-					app.showImage("milliGATConnectN")
-					app.hideImage("milliGATConnectY")
-				if len(address.valco)!=0:
-					app.showImage("valcoConnectY")
-					app.hideImage("valcoConnectN")
-				else:
-					app.showImage("valcoConnectN")
-					app.hideImage("valcoConnectY")
-				if len(address.OMRON)!=0:
-					app.showImage("OMRONConnectY")
-					app.hideImage("OMRONConnectN")
-				else: 
-					app.showImage("OMRONConnectN")
-					app.hideImage("OMRONConnectY")
+				
+				
+				
 
 
 				app.hideImage("homeSpinner")
