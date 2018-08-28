@@ -61,8 +61,8 @@ class mySerial():
 		self.connect()
 		self.disconnect()
 		
-	def testConnection(self,address,typ):
-		address.load()
+	def testConnection(self,obj,typ):
+		obj.address.load()
 		self.connect()
 		if self.connected==1:
 			def callback():
@@ -72,21 +72,30 @@ class mySerial():
 				app.disableButton("milliSerialRefresh")
 				app.showImage("homeSpinner")
 				app.showImage("milliSpinner")
-				prev=self.testInitAddr(address)
-				
+				prev=self.testInitAddr(obj.address)
+
 				#for milliGAT Pump 
 				if typ==0 or typ==1:
-					if prev[0]==0 :
-						address.milliGAT=[]
+					if prev[0]==0 or obj.address.milliGAT==[]:
+						obj.address.milliGAT=[]
 						for char in ascii_uppercase:	
 							self.write((char+"PR EU\n"))
 							self.read()
 							mi=self.read()
 							if mi!=b''and mi!=b'?\r\n':
-								address.milliGAT.append(char)
+								obj.address.milliGAT.append(char)
 							self.ser.flushInput()
 							self.ser.flushOutput()
-					if len(address.milliGAT)!=0:
+
+						for addr in obj.address.milliGAT:
+							self.write(str(addr)+"PR EU\n")
+							self.read()
+							eu=int(self.read())
+							bl=0
+							obj.address.milliGATSettings.append(tuple((eu,bl)))
+							obj.address.save()
+
+					if len(obj.address.milliGAT)!=0:
 						app.showImage("milliGATConnectY")
 						app.hideImage("milliGATConnectN")
 					else: 
@@ -95,17 +104,17 @@ class mySerial():
 
 				#for valco Valve
 				if typ==0 or typ==2:
-					if prev[1]==0 :
-						address.valco=[]
+					if prev[1]==0 or obj.address.valco==[]:
+						obj.address.valco=[]
 						for char in ascii_uppercase:	
 							self.write((char+"PR OP\n"))
 							self.read()
 							mi=self.read()
 							if mi!=b''and mi!=b'?\r\n':
-								address.valco.append(char)
+								obj.address.valco.append(char)
 							self.ser.flushInput()
 							self.ser.flushOutput()
-					if len(address.valco)!=0:
+					if len(obj.address.valco)!=0:
 						app.showImage("valcoConnectY")
 						app.hideImage("valcoConnectN")
 					else:
@@ -114,18 +123,19 @@ class mySerial():
 						
 				#for OMRON
 				if typ==0 or typ==3:
-					if prev[2]==0:
-						address.OMRON=[]
+					if prev[2]==0 or obj.address.OMRON==[]:
+						obj.address.OMRON=[]
 						for char in range(0,9):
 							string="@0"+str(char)+"RS01"
 							string=string+getFCS(string)+"\r\n"
 							self.write((string))
 							om=self.read()
 							if om!=b'':
-									address.OMRON.append(char)
+									obj.address.OMRON.append(char)
 							self.ser.flushInput()
 							self.ser.flushOutput()
-					if len(address.OMRON)!=0:
+
+					if len(obj.address.OMRON)!=0:
 						app.showImage("OMRONConnectY")
 						app.hideImage("OMRONConnectN")
 					else: 
@@ -133,10 +143,13 @@ class mySerial():
 						app.hideImage("OMRONConnectY")
 				self.disconnect()
 				
-				app.changeOptionBox("milliAddress",["-select Address-",]+address.milliGAT)
-				#app.changeOptionBox("valcoAddress",["-select Address-",]+address.valco)
-				#app.changeOptionBox("OMRONAddress",["-select Address-",]+address.OMRON)
-				
+				app.changeOptionBox("milliAddress",["-select Address-",]+obj.address.milliGAT)
+				app.setOptionBox("milliAddress",1)
+				#app.changeOptionBox("valcoAddress",["-select Address-",]+obj.address.valco)
+				#app.setOptionBox("valcoAddress",1)
+				#app.changeOptionBox("OMRONAddress",["-select Address-",]+obj.address.OMRON)
+				#app.setOptionBox("OMRONAddress",1)
+
 				
 				
 
@@ -145,7 +158,7 @@ class mySerial():
 				app.hideImage("milliSpinner")
 				app.enableButton("serialRefresh") 
 				app.enableButton("milliSerialRefresh")
-				address.save()
+				obj.address.save()
 				
 
 			t=threading.Thread(target=callback, name="serialCheck")

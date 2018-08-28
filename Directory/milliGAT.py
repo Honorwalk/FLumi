@@ -15,11 +15,12 @@ flowRate=0
 class milliGATHome():
         milliVar=variables.milliGAT()
         serial=""
-        eu=809
-
+        eu=0
+        set2=0
         def __init__(self):
                 self.serial=functions.mySerial()
                 self.address=variables.address(serial)
+                
                 with app.frame("controlPage"): 
                         with app.frame("milliLeftButtons",0,0,1,1):
                                 app.setPadding([5,5])
@@ -32,8 +33,9 @@ class milliGATHome():
 
                         with app.frame("milliRightButtions",0,4,1,1):
                                 app.setPadding([5,5])
-                                app.addIconButton("milliSerialRefresh",lambda: self.serial.testConnection(self.address,1),"connect-alt-1",0,1)
+                                app.addIconButton("milliSerialRefresh",lambda: self.serial.testConnection(self,1),"connect-alt-1",0,1)
                                 app.addOptionBox("milliAddress",["-select Address-",]+self.address.milliGAT,0,0)
+                                app.setOptionBoxChangeFunction("milliAddress",self.getSettings)
                                 app.addImage("milliSpinner","Directory/Images/loading.gif",0,1)
                                 app.setAnimationSpeed("milliSpinner",60)
                                 app.hideImage("milliSpinner")
@@ -51,7 +53,7 @@ class milliGATHome():
                                 app.setBg("white")
                                 with app.frame("milliLeft",0,0):
                                         with app.frame("milliAspirate"):
-                                                app.addLabel("AspirateTitle","Aspirate")
+                                                app.addLabel("AspirateTitle","Pump")
                                                 with app.frame("milliAspirateButtons"):
                                                         app.addIconButton("leftAspirate",lambda: self.aspirate("left"),"arrow-1-left",0,0)
                                                         app.addIconButton("stopAspirate",lambda: self.aspirate("stop"),"stop-alt",0,1)
@@ -179,7 +181,6 @@ class milliGATHome():
                 else:
                         app.errorBox("Pump Not Selected","Please select pump address", parent=None)
 
-
         def slew(self,direction):
                 address=app.getOptionBox("milliAddress")
                 if str(address)!= "None":
@@ -221,24 +222,11 @@ class milliGATHome():
                         self.aspirate("stop")
    
         def getSettings(self):
-                address=app.getOptionBox("milliAddress")
-                if str(address)!= "None":
-                        self.serial.connect()
-                        self.serial.write(str(address)+"PR EU\n")
-                        self.serial.read()
-                        self.milliVar.eu=int(self.serial.read())
-                        self.serial.disconnect()
-                        app.setLabel("euText",str(self.milliVar.eu))
-                        self.milliVar.save()
-
-                else:
-                        app.errorBox("Pump Not Selected","Please select pump address or connect devices", parent=None)
-
-                        
-
-
-
-
-
-
+                selAddress=app.getOptionBox("milliAddress")
+                index=self.address.milliGAT.index(selAddress)
+                settings=self.address.milliGATSettings[index]
+                self.eu=settings[0]
+                self.set2=settings[1]
+                app.setLabel("euText",str(self.eu))
+                app.setLabel("set2Text",str(self.set2))
 

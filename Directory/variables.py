@@ -45,12 +45,14 @@ class milliGAT():
 class address():
     def __init__(self,serial):
         loadedClass=self.load()
-        if hasattr(loadedClass,'milliGAT')==0:
+        if hasattr(loadedClass,'milliGATSettings')==0:
             self.milliGAT=[]
+            self.milliGATSettings=[]
             self.valco=[]
             self.OMRON=[]
         else:
             self.milliGAT=loadedClass.milliGAT
+            self.milliGATSettings=loadedClass.milliGATSettings
             self.valco=loadedClass.valco
             self.OMRON=loadedClass.OMRON
         self.save()
@@ -63,4 +65,5 @@ class address():
         self=pickle.load(pickleIn)
         return self
 
-
+    
+    
